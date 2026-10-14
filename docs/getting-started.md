@@ -1,50 +1,50 @@
-# 第一次使用：集成与 Lovelace 卡片
+# First use: integration and Lovelace card
 
-本指南针对普通版 Harman Kardon SoundSticks 5。集成负责控制音箱；Lovelace 卡片负责仪表板界面。卡片随集成一起安装和更新。
+This guide targets the standard Harman Kardon SoundSticks 5. The integration controls the speaker; the Lovelace card provides the dashboard UI. The card is installed and updated together with the integration.
 
-## 1. 准备 Home Assistant 和音箱
+## 1. Prepare Home Assistant and the speaker
 
-- Home Assistant 最低版本：2025.12.2。
-- 自带集成图标需要 HA 2026.3 或更新版本，旧版不显示该图标但不影响控制功能。
-- HA 需要能建立 GATT 连接的本地蓝牙适配器或蓝牙代理；只转发广播的代理不够。
-- 让音箱保持唤醒并处于蓝牙覆盖范围内。
-- 此集成不传输音频。手机、电脑或其他音频方案负责向音箱播放音乐，Music Assistant 不是安装此集成的必需条件。
+- Minimum Home Assistant version: 2025.12.2.
+- The bundled integration icon requires HA 2026.3 or newer; older versions simply don't show the icon — control features are unaffected.
+- HA needs a local Bluetooth adapter or Bluetooth proxy that can establish GATT connections; proxies that only forward advertisements are not enough.
+- Keep the speaker awake and within Bluetooth range.
+- This integration does not transport audio. Your phone, computer, or another audio solution plays music to the speaker. Music Assistant is not a requirement for installing this integration.
 
-## 2. 安装 BLE 集成
+## 2. Install the BLE integration
 
-在 HACS 的自定义仓库中添加：
+Add the repository to HACS as a custom repository:
 
 ```text
 https://github.com/neqq3/soundsticks5-ha
 ```
 
-类别选择 **Integration / 集成**，下载安装后重启 HA。在“设置 → 设备与服务”接受发现的 SoundSticks 5；也可以点击“添加集成”，搜索 SoundSticks 5。
+Pick the **Integration** category, download, and restart HA. Accept the discovered SoundSticks 5 under "Settings → Devices & services", or click "Add integration" and search for SoundSticks 5.
 
-不使用 HACS 时，将仓库的 `custom_components/soundsticks5` 目录复制为 `/config/custom_components/soundsticks5`，再重启并添加集成。
+Without HACS, copy the repository's `custom_components/soundsticks5` directory to `/config/custom_components/soundsticks5`, restart, and add the integration.
 
-添加成功后，先在设备页确认能看到灯光、媒体、EQ 等实体。可执行“刷新全部状态”，检查是否读到音量、主题等值。
+After adding it, first check on the device page that lighting, media, EQ, and other entities appear. Run "Refresh all states" and verify that values such as volume and theme are read back.
 
-## 3. 安装自定义卡片
+## 3. Install the custom card
 
-安装并配置集成后，卡片 JS 和图片已经包含在集成目录内，无需复制到 `www`。通常使用的界面管理资源模式下，集成会自动注册卡片，并在升级后更新资源版本。
+Once the integration is installed and configured, the card JS and image are already bundled inside the integration directory — nothing needs to be copied to `www`. In the usual UI-managed resources mode, the integration registers the card automatically and bumps the resource version on upgrades.
 
-刷新浏览器。进入要放置卡片的仪表板，点击编辑、添加卡片，选择“自定义：SoundSticks 5 (HK design)”。也可以使用手动卡片，填入：
+Refresh your browser. Open the dashboard where you want the card, click edit → add card, and pick "Custom: SoundSticks 5 (HK design)". You can also use a manual card with:
 
 ```yaml
 type: custom:soundsticks5-lovelace-card
 ```
 
-设备详情页不会因为安装卡片而被替换，也不会自动创建专用仪表板。
+The device detail page is not replaced by installing the card, and no dedicated dashboard is created automatically.
 
-如果希望打开 HA 就看到这张卡片，可以创建一个自己的仪表板并添加卡片，再在个人资料的仪表板选项中设为个人默认页；管理员也可以在“设置 → 仪表盘”中设置默认仪表板。参见 [HA 官方仪表板说明](https://www.home-assistant.io/dashboards/dashboards/#setting-a-default-dashboard)。
+If you want this card to be the first thing you see when opening HA, create your own dashboard, add the card, and set it as your default dashboard in your profile's dashboard setting; admins can also set a default dashboard under "Settings → Dashboards". See [the official HA dashboard docs](https://www.home-assistant.io/dashboards/dashboards/#setting-a-default-dashboard).
 
-### 从旧版手动安装迁移
+### Migrating from older manual installs
 
-旧资源 `/local/soundsticks5-lovelace.js`（包括版本查询参数）会自动迁移到内置地址，并合并该卡片的重复资源；已有卡片配置保持有效。确认新卡片正常后，可自行删除旧的 `www/soundsticks5-lovelace.js`。旧图片若仍被自定义 `image` 配置引用，应保留。
+The legacy resource `/local/soundsticks5-lovelace.js` (including version query parameters) is migrated automatically to the bundled address, and duplicate card resources are merged; existing card configs keep working. Once the new card renders correctly, you can delete the old `www/soundsticks5-lovelace.js`. Keep the old image if a custom `image` config still references it.
 
-### 使用 YAML 管理资源
+### Managing resources with YAML
 
-集成不会改写你的 YAML 文件。在现有 `lovelace.resources` 列表中添加以下条目；若有旧版资源，替换它：
+The integration never rewrites your YAML files. Add the following entry to your existing `lovelace.resources` list; if a legacy resource exists, replace it:
 
 ```yaml
 lovelace:
@@ -53,26 +53,26 @@ lovelace:
       type: module
 ```
 
-重新加载资源并刷新浏览器。这个无版本地址不设置长期 HTTP 缓存。若自动注册失败，也可以在界面的资源页手动添加同一地址，类型为 JavaScript 模块。
+Reload resources and refresh your browser. This version-less URL does not set long-lived HTTP caching. If automatic registration fails, you can also add the same address manually on the UI's resources page, type JavaScript module.
 
-## 4. 选择播放方式
+## 4. Choose a playback mode
 
-只有一台音箱、希望先控制音量和灯光时，以上最简配置即可。默认会发现 SoundSticks 集成实体，播放方式为 `auto`。
+With a single speaker and the goal of controlling volume and lighting, the minimal setup above is enough. The SoundSticks entities are discovered by default and playback mode is `auto`.
 
-### 使用 BLE 回传信息和播放控制
+### BLE-only info and playback control
 
-在卡片图形编辑器选择“仅 BLE”，或使用：
+In the card's visual editor pick "BLE only", or use:
 
 ```yaml
 type: custom:soundsticks5-lovelace-card
 playback_mode: ble
 ```
 
-歌曲信息取决于音箱实际回传。正在通过蓝牙播放也不保证 HA 一定收到歌名、歌手；没有时显示“暂无曲目信息”。
+Track info depends on what the speaker actually reports back. Playing over Bluetooth does not guarantee HA receives title/artist; when nothing arrives, "Track information unavailable" is shown.
 
-### 使用已有媒体播放器提供歌曲和播放控制
+### Use an existing media player for track info and playback control
 
-如果 MA 或其他集成中的对应播放器已经正确显示歌曲，在卡片编辑器选择“指定媒体实体”，再选中那台实际播放源：
+If the matching player in MA or another integration already displays track info correctly, pick "Specific media entity" in the card editor and select the actual playback source:
 
 ```yaml
 type: custom:soundsticks5-lovelace-card
@@ -80,9 +80,9 @@ playback_mode: entity
 playback_entity: media_player.your_speaker
 ```
 
-将示例 ID 换成自己的实体。歌名、歌手、状态和上一首／播放／暂停／下一首都使用它；**音箱音量、灯光、EQ 仍通过 SoundSticks 集成控制**。所选播放器不可用时禁用播放按钮，不改控其他设备。
+Replace the example ID with your own entity. Title, artist, state, and previous/play/pause/next all use it; **speaker volume, lighting, and EQ are still controlled through the SoundSticks integration**. Playback buttons are disabled when the selected player is unavailable, and no other device is touched.
 
-### 自动模式
+### Auto mode
 
 ```yaml
 type: custom:soundsticks5-lovelace-card
@@ -90,37 +90,37 @@ playback_mode: auto
 playback_entity: media_player.your_speaker
 ```
 
-所选播放源正在播放或暂停时使用它，否则回到 BLE。未指定播放源时，只接受同一个 HA 设备下唯一的其他媒体播放器；不同集成创建的设备可能无法自动关联，所以 MA 用户通常需要手动选择一次。
+Auto uses the selected playback source while it is playing/paused, and falls back to BLE otherwise. With no playback entity configured, it only accepts a single other media player under the same HA device as the BLE media entity; devices created by different integrations may not auto-associate, so MA users usually need to pick once manually.
 
-自动模式不识别音箱当前 AUX／蓝牙输入，也不会通过相似名称猜测播放源。完整规则见 [播放源配置](../soundsticks5-card/PLAYBACK.md)。当前主要验证的是单台音箱，不建议把多台音箱的自动识别当作已完整支持。
+Auto mode does not detect the speaker's current AUX/Bluetooth input, and never guesses playback sources from similar names. For the full rules, see [playback source configuration](../soundsticks5-card/PLAYBACK.md). Validation currently focuses on a single speaker — treat multi-speaker auto-detection as unsupported.
 
-## 5. 保存和应用预设
+## 5. Save and apply presets
 
-1. 调好音量、灯效、EQ 等参数。
-2. 在“场景预设”输入名称，点击“保存当前”。同名会覆盖。
-3. 以后在下拉框选择预设，点击“应用”。只选择名称不会立即修改音箱。
+1. Set volume, lighting effect, EQ, and other parameters the way you like.
+2. Enter a name under "Scene presets" and click "Save current". Saving with the same name overwrites.
+3. Later, pick a preset from the dropdown and click "Apply". Selecting a name alone does not change the speaker.
 
-预设保存的是音箱设置，不是歌曲、MA 队列或卡片布局。可以从自动化或开发者工具的“动作”调用：
+Presets store speaker settings, not songs, MA queues, or card layout. They can be called from automations or from the action box in Developer tools:
 
 ```yaml
 action: soundsticks5.save_preset
 data:
-  name: 夜间听歌
+  name: Night listening
 ```
 
-应用时将动作改为 `soundsticks5.apply_preset`；删除时改为 `soundsticks5.delete_preset`。这些动作目前操作第一个已加载的 SoundSticks 集成实例。应用会依次写入参数；中途失败可能只完成一部分。
+Use `soundsticks5.apply_preset` to apply and `soundsticks5.delete_preset` to delete. These actions currently operate on the first loaded SoundSticks integration instance. Applying writes parameters one by one; a failure midway may leave them partially applied.
 
-## 6. 更新与常见问题
+## 6. Updates and common issues
 
-| 现象 | 检查方法 |
+| Symptom | What to check |
 |---|---|
-| 自定义元素不存在 | 确认集成已加载，刷新浏览器；检查资源列表或日志，必要时按上面的地址手动注册 |
-| 卡片图片不显示 | 确认集成的 `frontend` 目录完整；访问 HA 的 `/soundsticks5/frontend/soundsticks5.png` 应能打开图片 |
-| 更新后仍是旧界面 | 更新集成并重启 HA，再刷新浏览器；界面管理的资源版本会自动更新，无需重复添加 |
-| 有声音但没有歌名 | 查看媒体实体的 `media_title`、`media_artist`；若正确数据在另一个播放器，配置“指定媒体实体” |
-| 播放按钮禁用 | 检查指定播放器是否可用、是否声明支持该操作 |
-| 灯光或音量无法控制 | 检查音箱是否唤醒、BLE 距离、适配器或代理是否能建立连接；必要时关闭占用连接的 App 后刷新状态 |
+| Custom element not found | Confirm the integration is loaded, refresh the browser; check the resource list or logs, and register the resource manually with the address above if needed |
+| Card image missing | Confirm the integration's `frontend` directory is complete; opening `/soundsticks5/frontend/soundsticks5.png` on your HA instance should show the image |
+| Old UI after update | Update the integration, restart HA, then refresh the browser; UI-managed resource versions update automatically — no need to re-add |
+| Audio plays but no track info | Check the media entity's `media_title` and `media_artist`; if the correct data lives in another player, configure "Specific media entity" |
+| Playback buttons disabled | Check whether the selected player is available and declares support for the operation |
+| Lighting or volume uncontrollable | Check that the speaker is awake, BLE distance, and that the adapter/proxy can establish connections; if another app holds the connection, close it and refresh state |
 
-出现“蓝牙 BLE 控制失败：连接中断或音箱未响应”时，HK One 或其他 App 可能正在占用蓝牙 BLE 控制连接。请完全退出这些 App，等待几秒后重试。该错误也可能来自信号、音箱待机或代理异常，并不能单凭报错确认 App 占用；这里指蓝牙 BLE 控制连接，不要求断开用于播放音乐的经典蓝牙音频连接。
+When you see "Bluetooth BLE control failed: connection interrupted or speaker not responding", HK One or another app may be holding the Bluetooth BLE control connection. Fully quit those apps, wait a few seconds, and retry. The same error can also come from signal issues, the speaker standby, or a proxy problem — the message alone does not prove app interference. This refers to the Bluetooth BLE *control* connection; the Classic Bluetooth audio connection used for music playback does not need to be disconnected.
 
-先用自己的环境验证灯光、音量、播放控制、一次预设保存和应用，再用于自动化。更多适配器和固件的验证范围见 [验证状态](validation.md)。
+Validate lighting, volume, playback control, and one preset save/apply in your own environment before relying on them in automations. See [validation status](validation.md) for the verified range of adapters and firmware.

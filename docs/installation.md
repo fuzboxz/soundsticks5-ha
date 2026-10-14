@@ -1,6 +1,6 @@
 # Installation
 
-For an end-to-end walkthrough including the Lovelace card, see [第一次使用](getting-started.md).
+For an end-to-end walkthrough including the Lovelace card, see the [first-use guide](getting-started.md).
 
 ## BLE integration
 

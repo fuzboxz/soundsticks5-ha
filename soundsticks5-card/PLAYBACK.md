@@ -1,14 +1,14 @@
-# 播放源配置
+# Playback source configuration
 
-在 HA 仪表板中编辑这张卡片，图形编辑器可选择播放控制方式和播放源实体。配置保存在仪表板中，所有浏览器共用。
+Edit the card on an HA dashboard: the visual editor selects the playback control mode and playback source entity. Configuration is stored in the dashboard and shared by all browsers.
 
-- `entity`（指定媒体实体）：歌名、歌手、状态、上一首、播放、暂停、下一首全部来自指定实体。离线时禁用按钮，不切换目标。
-- `auto`（默认）：所选播放源为 playing / paused 时使用它，否则回到 BLE。未指定播放源时，只接受与 BLE 媒体实体具有同一个 HA device_id 的唯一其他媒体实体；不会按名称猜测，多候选时回到 BLE。这不是音箱 AUX / 蓝牙输入检测。
-- `ble`：全部播放信息及播放控制只用 SoundSticks BLE 媒体实体。
+- `entity` (specific media entity): title, artist, state, previous, play, pause, and next all come from the selected entity. Buttons are disabled while it is unavailable; the target is never switched automatically.
+- `auto` (default): uses the selected playback source while it is playing/paused, and falls back to BLE otherwise. With no playback entity configured, it only accepts a single other media entity that shares the same HA `device_id` as the BLE media entity; it never guesses by name, and falls back to BLE when multiple candidates exist. This is not AUX/Bluetooth input detection.
+- `ble`: all playback info and playback control use only the SoundSticks BLE media entity.
 
-音箱音量始终使用 BLE 媒体实体。灯光、EQ 和设备设置继续使用 SoundSticks 集成。
+Speaker volume always uses the BLE media entity. Lighting, EQ, and device settings keep using the SoundSticks integration.
 
-指定播放源的配置示例（替换为自己的实体 ID）：
+Example configuration for a specific playback source (replace with your own entity ID):
 
 ```yaml
 type: custom:soundsticks5-lovelace-card
@@ -16,8 +16,8 @@ playback_mode: entity
 playback_entity: media_player.your_speaker
 ```
 
-可选 `media_player` 字段用于明确指定 **BLE** 媒体实体，不是 MA 播放源。原有其他实体覆盖配置继续有效。
+The optional `media_player` field explicitly selects the **BLE** media entity — it is not an MA playback source. Existing overrides for other entities keep working.
 
-指定模式不混用两个实体的歌名或歌手。缺少元数据时显示占位；播放器未声明支持的操作会禁用。
+The specific mode never mixes title/artist from two entities. Placeholders are shown when metadata is missing; operations the player does not declare support for are disabled.
 
-验证：`node tools/playback_test.cjs` 覆盖元数据、MA 暂停/恢复/切歌服务路由、BLE 音量、离线/能力限制、自动回退及多候选处理。已在 HAOS 上完成一次暂停和恢复播放测试。
+Validation: `node tools/playback_test.cjs` covers metadata, MA pause/resume/track-change service routing, BLE volume, offline/capability limits, auto fallback, and multi-candidate handling. A pause and resume round-trip has been tested once on HAOS.

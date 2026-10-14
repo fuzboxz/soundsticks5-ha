@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SoundSticks 5 · Lovelace 卡片预览</title>
+<title>SoundSticks 5 · Lovelace card preview</title>
 <style>
   html,body{margin:0;padding:0}
   body{
@@ -21,21 +21,21 @@
 </style>
 </head>
 <body>
-<div class="cap"><b>预览</b> · 数据为模拟值，交互可点（播放 / 主题 / 滑块 / 开关）</div>
+<div class="cap"><b>Preview</b> · mock data, interactions are clickable (play / themes / sliders / switches)</div>
 <div class="switcher">
-  <span style="align-self:center;color:#8a8b8f;margin-right:2px">灯光主题演示：</span>
-  <button data-demo="ocean">碧波</button>
-  <button data-demo="aurora">极光</button>
-  <button data-demo="blossom">落英</button>
-  <button data-demo="sunrise">旭日</button>
-  <button data-demo="fireplace" class="on">炉火</button>
+  <span style="align-self:center;color:#8a8b8f;margin-right:2px">Lighting theme demo:</span>
+  <button data-demo="ocean">Ocean</button>
+  <button data-demo="aurora">Aurora</button>
+  <button data-demo="blossom">Blossom</button>
+  <button data-demo="sunrise">Sunrise</button>
+  <button data-demo="fireplace" class="on">Fireplace</button>
 </div>
 <div class="frame"><soundsticks5-lovelace-card id="card"></soundsticks5-lovelace-card></div>
 
-<!-- 先加载卡片定义，再做模拟初始化（否则 custom element 未注册，setConfig 不存在） -->
+<!-- Load the card definition first, then run the mock init (otherwise the custom element is not registered and setConfig does not exist) -->
 <script src="/soundsticks5/frontend/soundsticks5-lovelace.js"></script>
 <script>
-/* ---- 简易 ha-icon（预览用，HA 内由前端提供真实 MDI） ---- */
+/* ---- Minimal ha-icon (preview only; inside HA the frontend provides real MDI icons) ---- */
 const MDI = {
   "mdi:play": "M8,5.14V19.14L19,12.14L8,5.14Z",
   "mdi:pause": "M14,19H18V5H14M6,19H10V5H6V19Z",
@@ -60,7 +60,7 @@ class HaIcon extends HTMLElement {
 }
 customElements.define("ha-icon", HaIcon);
 
-/* ---- 模拟 hass ---- */
+/* ---- Mock hass ---- */
 const states = {
   "media_player.soundsticks_5_media":        { state: "playing", attributes: { volume_level: 0.62, media_title: "Blinding Lights", media_artist: "The Weeknd" } },
   "light.soundsticks_5_lighting":            { state: "on", attributes: {} },
@@ -94,14 +94,14 @@ const KEY2EID = {
   preset:"select.soundsticks_5_preset",
 };
 for (const hz of [125,250,500,1000,2000,4000,8000]) KEY2EID["eq_"+hz] = `number.soundsticks_5_eq_${hz}`;
-// 按钮类实体也登记，保证 discovery 能映射
+// Register button-like entities too so discovery can map them
 for (const k of ["color_reset","eq_reset","refresh_state","release_ble"]) KEY2EID[k] = `button.soundsticks_5_${k}`;
 
 const card = document.getElementById("card");
 function update(){ card.hass = hass; }
 
 const hass = {
-  language: "zh",
+  language: "en",
   states,
   callWS: async (msg) => {
     if (msg.type === "config/entity_registry/list")
@@ -135,7 +135,7 @@ if (previewWidth >= 320 && previewWidth <= 960) document.querySelector(".frame")
 card.setConfig({ image: "/soundsticks5/frontend/soundsticks5.png" });
 update();
 
-/* 主题演示切换 */
+/* Theme demo switcher */
 document.querySelectorAll("[data-demo]").forEach((b) => b.addEventListener("click", () => {
   document.querySelectorAll("[data-demo]").forEach((x) => x.classList.remove("on"));
   b.classList.add("on");
